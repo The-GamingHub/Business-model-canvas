@@ -1,0 +1,12 @@
+{
+  "name": "business-model-canvas",
+  "version": "1.0.0",
+  "description": "Interactive Business Model Canvas with real-time collaboration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+} 

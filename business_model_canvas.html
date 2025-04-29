@@ -5,136 +5,531 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Business Model Canvas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
 
     body {
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: #ffffff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      overflow: hidden;
+      padding: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: #00d4ff;
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #00b8e0;
     }
 
     .canvas-container {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      gap: 15px;
-      width: 90%;
-      max-width: 1200px;
+      gap: 20px;
+      width: 95%;
+      max-width: 1400px;
       background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .card {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-      padding: 15px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 15px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: move;
+      user-select: none;
+    }
+
+    .card.dragging {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%);
+      transition: 0.5s;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .card:hover::before {
+      transform: translateX(100%);
     }
 
     .card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
       color: #00d4ff;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .card p {
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: #d4d4d4;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin-bottom: 15px;
     }
 
-    /* Grid Layout for Business Model Canvas */
-    .key-partners {
-      grid-column: 1 / 2;
-      grid-row: 1 / 3;
+    .card .edit-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .key-activities {
-      grid-column: 2 / 3;
-      grid-row: 1 / 2;
+    .card:hover .edit-btn {
+      opacity: 1;
     }
 
-    .value-propositions {
-      grid-column: 3 / 4;
-      grid-row: 1 / 2;
+    @media (max-width: 1200px) {
+      .canvas-container {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+      }
+
+      .key-partners {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+      }
+
+      .key-activities {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+      }
+
+      .value-propositions {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+      }
+
+      .customer-relationships {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+      }
+
+      .channels {
+        grid-column: 1 / 3;
+        grid-row: 3 / 4;
+      }
+
+      .revenue-streams {
+        grid-column: 1 / 2;
+        grid-row: 4 / 5;
+      }
+
+      .cost-structure {
+        grid-column: 2 / 3;
+        grid-row: 4 / 5;
+      }
     }
 
-    .customer-relationships {
-      grid-column: 4 / 5;
-      grid-row: 1 / 2;
-    }
+    @media (max-width: 768px) {
+      .canvas-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(7, auto);
+      }
 
-    .channels {
-      grid-column: 2 / 4;
-      grid-row: 2 / 3;
-    }
+      .card {
+        grid-column: 1 / 2;
+      }
 
-    .revenue-streams {
-      grid-column: 3 / 5;
-      grid-row: 3 / 4;
-    }
-
-    .cost-structure {
-      grid-column: 1 / 3;
-      grid-row: 3 / 4;
+      .key-partners { grid-row: 1 / 2; }
+      .key-activities { grid-row: 2 / 3; }
+      .value-propositions { grid-row: 3 / 4; }
+      .customer-relationships { grid-row: 4 / 5; }
+      .channels { grid-row: 5 / 6; }
+      .revenue-streams { grid-row: 6 / 7; }
+      .cost-structure { grid-row: 7 / 8; }
     }
   </style>
 </head>
 
 <body>
+  <div class="controls">
+    <button class="btn btn-primary" id="exportBtn">Export Canvas</button>
+    <button class="btn" id="importBtn">Import Canvas</button>
+    <input type="file" id="importInput" style="display: none" accept=".json">
+    <select class="btn" id="templateSelect">
+      <option value="">Select Template</option>
+      <option value="startup">Startup</option>
+      <option value="saas">SaaS</option>
+      <option value="ecommerce">E-commerce</option>
+    </select>
+  </div>
+
   <div class="canvas-container">
-    <div class="card key-partners">
+    <div class="card key-partners" draggable="true">
       <h3>Key Partners</h3>
       <p>Gemini Exchange, Payment Gateways, Banking Partners, Compliance Advisors</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card key-activities">
+    <div class="card key-activities" draggable="true">
       <h3>Key Activities</h3>
       <p>Fetching market data, Executing trades, Monitoring compliance</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card value-propositions">
+    <div class="card value-propositions" draggable="true">
       <h3>Value Propositions</h3>
       <p>Seamless integration with crypto markets, reliable API access</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card customer-relationships">
+    <div class="card customer-relationships" draggable="true">
       <h3>Customer Relationships</h3>
       <p>24/7 support, personalized solutions, secure transactions</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card channels">
+    <div class="card channels" draggable="true">
       <h3>Channels</h3>
       <p>Web platform, API integrations, mobile app</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card revenue-streams">
+    <div class="card revenue-streams" draggable="true">
       <h3>Revenue Streams</h3>
       <p>Transaction fees, Subscription plans, Premium features</p>
+      <button class="edit-btn">Edit</button>
     </div>
-    <div class="card cost-structure">
+    <div class="card cost-structure" draggable="true">
       <h3>Cost Structure</h3>
       <p>API development, Compliance management, Operational costs</p>
+      <button class="edit-btn">Edit</button>
     </div>
   </div>
+
+  <script>
+    // WebSocket connection
+    const ws = new WebSocket('ws://localhost:3000');
+    let isConnected = false;
+
+    ws.onopen = () => {
+      isConnected = true;
+      console.log('Connected to WebSocket server');
+    };
+
+    ws.onclose = () => {
+      isConnected = false;
+      console.log('Disconnected from WebSocket server');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'update') {
+        const card = document.querySelector(`.${data.id}`);
+        if (card) {
+          card.querySelector('p').textContent = data.content;
+        }
+      } else if (data.type === 'reorder') {
+        const cards = Array.from(document.querySelectorAll('.card'));
+        const card = document.querySelector(`.${data.id}`);
+        if (card) {
+          const targetIndex = data.index;
+          const currentIndex = cards.indexOf(card);
+          if (currentIndex !== targetIndex) {
+            if (currentIndex < targetIndex) {
+              card.parentNode.insertBefore(card, cards[targetIndex + 1]);
+            } else {
+              card.parentNode.insertBefore(card, cards[targetIndex]);
+            }
+          }
+        }
+      }
+    };
+
+    // Templates
+    const templates = {
+      startup: {
+        'key-partners': 'Incubators, Mentors, Early Adopters, Tech Partners',
+        'key-activities': 'Product Development, Market Research, Fundraising',
+        'value-propositions': 'Innovative Solution, First Mover Advantage, Scalability',
+        'customer-relationships': 'Direct Support, Community Building, Feedback Loops',
+        'channels': 'Social Media, Demo Days, Networking Events',
+        'revenue-streams': 'Seed Funding, Pre-sales, Grants',
+        'cost-structure': 'Development Costs, Marketing, Team Salaries'
+      },
+      saas: {
+        'key-partners': 'Cloud Providers, Payment Processors, Integration Partners',
+        'key-activities': 'Software Development, Customer Support, Analytics',
+        'value-propositions': 'Subscription Model, Regular Updates, 24/7 Support',
+        'customer-relationships': 'Automated Support, Account Managers, Training',
+        'channels': 'Website, App Stores, Partner Networks',
+        'revenue-streams': 'Monthly Subscriptions, Annual Plans, Add-ons',
+        'cost-structure': 'Hosting, Development, Customer Acquisition'
+      },
+      ecommerce: {
+        'key-partners': 'Suppliers, Logistics, Payment Gateways',
+        'key-activities': 'Inventory Management, Order Processing, Marketing',
+        'value-propositions': 'Wide Selection, Fast Delivery, Competitive Prices',
+        'customer-relationships': 'Loyalty Programs, Customer Service, Reviews',
+        'channels': 'Website, Mobile App, Marketplaces',
+        'revenue-streams': 'Product Sales, Premium Memberships, Advertising',
+        'cost-structure': 'Inventory, Shipping, Platform Maintenance'
+      }
+    };
+
+    document.getElementById('templateSelect').addEventListener('change', (e) => {
+      const template = templates[e.target.value];
+      if (template) {
+        Object.entries(template).forEach(([id, content]) => {
+          const card = document.querySelector(`.${id}`);
+          if (card) {
+            card.querySelector('p').textContent = content;
+            if (isConnected) {
+              ws.send(JSON.stringify({
+                type: 'update',
+                id,
+                content
+              }));
+            }
+          }
+        });
+        saveCanvasState();
+      }
+    });
+
+    // Save canvas state to localStorage
+    function saveCanvasState() {
+      const cards = document.querySelectorAll('.card');
+      const canvasState = Array.from(cards).map(card => ({
+        id: card.className.split(' ')[1],
+        content: card.querySelector('p').textContent
+      }));
+      localStorage.setItem('canvasState', JSON.stringify(canvasState));
+      
+      if (isConnected) {
+        cards.forEach((card, index) => {
+          ws.send(JSON.stringify({
+            type: 'update',
+            id: card.className.split(' ')[1],
+            content: card.querySelector('p').textContent
+          }));
+        });
+      }
+    }
+
+    // Load canvas state from localStorage
+    function loadCanvasState() {
+      const savedState = localStorage.getItem('canvasState');
+      if (savedState) {
+        const canvasState = JSON.parse(savedState);
+        canvasState.forEach(state => {
+          const card = document.querySelector(`.${state.id}`);
+          if (card) {
+            card.querySelector('p').textContent = state.content;
+          }
+        });
+      }
+    }
+
+    // Export canvas as JSON
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const cards = document.querySelectorAll('.card');
+      const canvasState = Array.from(cards).map(card => ({
+        id: card.className.split(' ')[1],
+        title: card.querySelector('h3').textContent,
+        content: card.querySelector('p').textContent
+      }));
+
+      const blob = new Blob([JSON.stringify(canvasState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'business-model-canvas.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Import canvas from JSON
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('importInput').click();
+    });
+
+    document.getElementById('importInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const canvasState = JSON.parse(event.target.result);
+            canvasState.forEach(state => {
+              const card = document.querySelector(`.${state.id}`);
+              if (card) {
+                card.querySelector('h3').textContent = state.title;
+                card.querySelector('p').textContent = state.content;
+              }
+            });
+            saveCanvasState();
+          } catch (error) {
+            alert('Invalid JSON file');
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    // Drag and Drop functionality
+    let draggedCard = null;
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        draggedCard = card;
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        draggedCard = null;
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (draggedCard !== card) {
+          const cards = Array.from(document.querySelectorAll('.card'));
+          const draggedIndex = cards.indexOf(draggedCard);
+          const dropIndex = cards.indexOf(card);
+          
+          if (draggedIndex < dropIndex) {
+            card.parentNode.insertBefore(draggedCard, card.nextSibling);
+          } else {
+            card.parentNode.insertBefore(draggedCard, card);
+          }
+          saveCanvasState();
+          
+          if (isConnected) {
+            ws.send(JSON.stringify({
+              type: 'reorder',
+              id: draggedCard.className.split(' ')[1],
+              index: dropIndex
+            }));
+          }
+        }
+      });
+    });
+
+    // Edit functionality
+    document.querySelectorAll('.edit-btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const card = this.parentElement;
+        const paragraph = card.querySelector('p');
+        const currentText = paragraph.textContent;
+        
+        const input = document.createElement('textarea');
+        input.value = currentText;
+        input.style.width = '100%';
+        input.style.height = '100px';
+        input.style.margin = '10px 0';
+        input.style.padding = '10px';
+        input.style.borderRadius = '5px';
+        input.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        input.style.color = '#fff';
+        input.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+        
+        paragraph.replaceWith(input);
+        input.focus();
+        
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save';
+        saveButton.style.padding = '5px 15px';
+        saveButton.style.margin = '5px';
+        saveButton.style.borderRadius = '5px';
+        saveButton.style.backgroundColor = '#00d4ff';
+        saveButton.style.color = '#fff';
+        saveButton.style.border = 'none';
+        saveButton.style.cursor = 'pointer';
+        
+        this.replaceWith(saveButton);
+        
+        saveButton.addEventListener('click', () => {
+          const newParagraph = document.createElement('p');
+          newParagraph.textContent = input.value;
+          input.replaceWith(newParagraph);
+          saveButton.replaceWith(this);
+          saveCanvasState();
+          
+          if (isConnected) {
+            ws.send(JSON.stringify({
+              type: 'update',
+              id: card.className.split(' ')[1],
+              content: input.value
+            }));
+          }
+        });
+      });
+    });
+
+    // Load saved state on page load
+    loadCanvasState();
+  </script>
 </body>
 
 </html>
