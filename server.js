@@ -1,43 +1,27 @@
-const WebSocket = require('ws');
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3001;
 
-const server = http.createServer((req, res) => {
-  if (req.url === '/') {
-    fs.readFile('./business_model_canvas.html', (err, data) => {
-      if (err) {
-        res.writeHead(500);
-        res.end('Error loading the file');
-        return;
-      }
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
-    });
-  }
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const wss = new WebSocket.Server({ server });
-
-const clients = new Set();
-
-wss.on('connection', (ws) => {
-  clients.add(ws);
-
-  ws.on('message', (message) => {
-    // Broadcast the message to all other clients
-    clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  });
-
-  ws.on('close', () => {
-    clients.delete(ws);
-  });
+// Serve business model canvas page
+app.get('/canvas', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'business_model_canvas.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}); 
+// Export the Express API
+module.exports = app;
+
+// Start server only if not running on Vercel
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+} 
